@@ -23,7 +23,7 @@ int main()
 	char c;
 	
 	//listen to the user input and then print it out
-	while(read(STDIN_FILENO, &c, 1) == 1 && c != 'q')
+	while(read(STDIN_FILENO, &c, 1) == 1 && c != 'q') // G
 	{
 		printf("%c", c);
 	}
