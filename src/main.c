@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
+#include <ctype.h>
 
 void enableTerminalRawMode();
 void disableTerminalRawMode();
@@ -19,7 +20,10 @@ int main()
 	//listen to the user input and then print it out
 	while(read(STDIN_FILENO, &c, 1) == 1 && c != 'q')
 	{
-		printf("%c", c);
+		// iscntrl() - tests whether a character is a control character or not (e.g. F1, alt)
+		
+		if (!iscntrl(c))
+			printf("%c\r\n", c);
 	}
 	
 	return 0;
@@ -39,8 +43,20 @@ void enableTerminalRawMode()
 	// c_oflag - output flags
 	// c_cflag - control flags
 
-	// Turn off echoing and canonical mode (~ is a bitwise-NOT operator)
-	raw_mode.c_lflag &= ~(ECHO | ICANON);
+	// Turn off (~ is a bitwise-NOT operator): 
+	//	echoing 
+	//	canonical mode
+	//	ctrl-c & ctrl-z signals
+	//	ctrl-s & ctrl-q signals
+	//	ctrl-v
+	//	ctrl-m (carriage return)
+	//	output processing (such as "\n", "\r")
+	//	other misc flags
+
+	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+	raw_mode.c_oflag &= ~(OPOST);
+	raw.c_cflag |= (CS8);
+	raw_mode.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 
 	// Set new attributes to the terminal
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw_mode);
