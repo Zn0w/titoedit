@@ -53,9 +53,9 @@ void enableTerminalRawMode()
 	//	output processing (such as "\n", "\r")
 	//	other misc flags
 
-	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+	raw_mode.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
 	raw_mode.c_oflag &= ~(OPOST);
-	raw.c_cflag |= (CS8);
+	raw_mode.c_cflag |= (CS8);
 	raw_mode.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 
 	// Set new attributes to the terminal
