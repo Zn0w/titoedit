@@ -15,13 +15,16 @@ int main()
 	
 	enableTerminalRawMode();
 	
-	char c;
-	
 	//listen to the user input and then print it out
-	while(read(STDIN_FILENO, &c, 1) == 1 && c != 'q')
+	while(1)
 	{
-		// iscntrl() - tests whether a character is a control character or not (e.g. F1, alt)
+		char c = '\0';
+		read(STDIN_FILENO, &c, 1);
+
+		if (c == 'q')
+			break;
 		
+		// iscntrl() - tests whether a character is a control character or not (e.g. F1, alt)
 		if (!iscntrl(c))
 			printf("%c\r\n", c);
 	}
@@ -57,6 +60,11 @@ void enableTerminalRawMode()
 	raw_mode.c_oflag &= ~(OPOST);
 	raw_mode.c_cflag |= (CS8);
 	raw_mode.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+
+	// Sets read() function not to pause untill there is user input, instead it waits for a counple of milliseconds
+	// and then the loop proceeds
+	raw_mode.c_cc[VMIN] = 0;
+  	raw_mode.c_cc[VTIME] = 1;
 
 	// Set new attributes to the terminal
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw_mode);
